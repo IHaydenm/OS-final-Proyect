@@ -369,9 +369,8 @@ void* cambiarPistas(void* arg){
             pthread_mutex_unlock(&mutex);
             break;
         }
-
-        printf("\n\n===== CAMBIANDO PALABRAS =====\n");
-
+        system("clear");
+        printf("\n\n======= CAMBIANDO PALABRAS =======\n");
         reiniciarJuegoParcial();
         mostrarTablero();
         mostrarPistas();
