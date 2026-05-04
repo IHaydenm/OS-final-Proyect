@@ -1,0 +1,5 @@
+Transistores MOSFET
+
+Compuerta, fuente, drenado
+
+https://www.rs-online.com/designspark/what-is-mosfet-a-detailed-guide-on-mosfet 
