@@ -364,10 +364,8 @@ int todasEncontradas(){
 
 void* cambiarPistas(void* arg){
     while(1){
-        sleep(30);
-
         pthread_mutex_lock(&mutex);
-
+        sleep(30);
         if(finJuego){
             pthread_mutex_unlock(&mutex);
             break;
@@ -388,7 +386,7 @@ int instanciaDeLogica(){
 
     srand(time(NULL));
 
-    pthread_t hilo;
+    pthread_t hilos[2];
 
     leerArchivos();
 
@@ -400,8 +398,9 @@ int instanciaDeLogica(){
     reiniciarJuego();
 
     pthread_mutex_init(&mutex, NULL);
-
-    pthread_create(&hilo, NULL, cambiarPistas, NULL);
+    for(int i=0; i<2 ; i++){
+        pthread_create(&hilos[i], NULL, cambiarPistas, NULL);
+    }
 
     char entrada[200];
     int numero;
@@ -447,8 +446,9 @@ int instanciaDeLogica(){
         }
         pthread_mutex_unlock(&mutex);
     }
-
-    pthread_join(hilo, NULL);
+    for(int i=0; i<2 ; i++){
+        pthread_join(hilos[i], NULL);
+    }
 
     pthread_mutex_destroy(&mutex);
 
