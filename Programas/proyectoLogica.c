@@ -162,24 +162,39 @@ void reemplazarNoEncontradas(){
 int puedeColocarHorizontal(char palabra[], int fila, int col){
     int i, len = strlen(palabra);
     if(col + len >= TABLERO) return 0;
-
     for(i = 0; i < len; i++){
-        if(tablero[fila][col+i] != ' ' &&
-           tablero[fila][col+i] != toupper(palabra[i]))
+        int f = fila;
+        int c = col + i;
+        if(tablero[f][c] != ' ' &&
+           tablero[f][c] != toupper(palabra[i]))
             return 0;
+        if(tablero[f][c] == ' '){
+            if(f > 0 && tablero[f-1][c] != ' ') return 0;
+            if(f < TABLERO-1 && tablero[f+1][c] != ' ') return 0;
+        }
     }
+    if(col > 0 && tablero[fila][col-1] != ' ') return 0;
+    if(col + len < TABLERO && tablero[fila][col+len] != ' ') return 0;
+
     return 1;
 }
 
 int puedeColocarVertical(char palabra[], int fila, int col){
     int i, len = strlen(palabra);
     if(fila + len >= TABLERO) return 0;
-
     for(i = 0; i < len; i++){
-        if(tablero[fila+i][col] != ' ' &&
-           tablero[fila+i][col] != toupper(palabra[i]))
+        int f = fila + i;
+        int c = col;
+        if(tablero[f][c] != ' ' &&
+           tablero[f][c] != toupper(palabra[i]))
             return 0;
+        if(tablero[f][c] == ' '){
+            if(c > 0 && tablero[f][c-1] != ' ') return 0;
+            if(c < TABLERO-1 && tablero[f][c+1] != ' ') return 0;
+        }
     }
+    if(fila > 0 && tablero[fila-1][col] != ' ') return 0;
+    if(fila + len < TABLERO && tablero[fila+len][col] != ' ') return 0;
     return 1;
 }
 
@@ -200,43 +215,31 @@ void colocarVertical(char palabra[], int fila, int col){
 }
 
 int insertarCruzada(int indice){
-    int i, j, k;
     char *nueva = palabras[indice].palabra;
-
-    for(i = 0; i < indice; i++){
-        char *actual = palabras[i].palabra;
-
-        for(j = 0; actual[j] != '\0'; j++){
-            for(k = 0; nueva[k] != '\0'; k++){
-
+    for(int intento = 0; intento < 100; intento++){
+        int base = rand() % indice; // pick random existing word
+        char *actual = palabras[base].palabra;
+        for(int j = 0; actual[j] != '\0'; j++){
+            for(int k = 0; nueva[k] != '\0'; k++){
                 if(toupper(actual[j]) == toupper(nueva[k])){
-
                     int fila, col;
-
-                    if(palabras[i].direccion == 0){
-                        fila = palabras[i].fila - k;
-                        col = palabras[i].columna + j;
-
-                        if(fila >= 0 &&
-                           puedeColocarVertical(nueva, fila, col)){
-
+                    if(palabras[base].direccion == 0){
+                        // base horizontal → new vertical
+                        fila = palabras[base].fila - k;
+                        col  = palabras[base].columna + j;
+                        if(fila >= 0 && puedeColocarVertical(nueva, fila, col)){
                             colocarVertical(nueva, fila, col);
-
                             palabras[indice].fila = fila;
                             palabras[indice].columna = col;
                             palabras[indice].direccion = 1;
                             return 1;
                         }
-                    }
+                    } 
                     else{
-                        fila = palabras[i].fila + j;
-                        col = palabras[i].columna - k;
-
-                        if(col >= 0 &&
-                           puedeColocarHorizontal(nueva, fila, col)){
-
+                        fila = palabras[base].fila + j;
+                        col  = palabras[base].columna - k;
+                        if(col >= 0 && puedeColocarHorizontal(nueva, fila, col)){
                             colocarHorizontal(nueva, fila, col);
-
                             palabras[indice].fila = fila;
                             palabras[indice].columna = col;
                             palabras[indice].direccion = 0;
